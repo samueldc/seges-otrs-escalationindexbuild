@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<otrs_config version="2.0" init="Config">
+    <Setting Name="Core###Seges-EscalationIndexBuild" Required="1" Valid="1">
+        <Description Translatable="1">Overloads (redefines) existing functions in Kernel::System::Ticket. Used to easily add customizations.</Description>
+        <Navigation>Core::Seges-EscalationIndexBuild</Navigation>
+        <Value>
+            <Item ValueType="String" ValueRegex="">Custom::Kernel::System::Ticket::Znuny4OTRSEscalationSuspend</Item>
+        </Value>
+    </Setting>
+    <Setting Name="Core###Seges-EscalationIndexBuild###CalendarDaysSLAs" Required="0" Valid="1">
+        <Description Translatable="1">List of SLAs based on calendar days and which the system should add an offset to the next working day it the start or final dates are non working days.</Description>
+        <Navigation>Core::Seges-EscalationIndexBuild</Navigation>
+        <Value>
+            <Array>
+            </Array>
+        </Value>
+    </Setting>
+    <Setting Name="Core###Seges-EscalationIndexBuild###ReferenceCalendar" Required="1" Valid="1">
+        <Description Translatable="1">Reference calendar used to check start or final dates against.</Description>
+        <Navigation>Core::Seges-EscalationIndexBuild</Navigation>
+        <Value>
+            <Item ValueType="String" ValueRegex="">0</Item>
+        </Value>
+    </Setting>
+    <Setting Name="Core###Seges-EscalationIndexBuild###NonWorkingDaysOfWeek" Required="1" Valid="1">
+        <Description Translatable="1">List of non working days of week (1 for monday, 2 for tuesday... and 7 for sunday).</Description>
+        <Navigation>Core::Seges::EscalationIndexBuild</Navigation>
+        <Value>
+            <Array>
+            </Array>
+        </Value>
+    </Setting>
+</otrs_config>

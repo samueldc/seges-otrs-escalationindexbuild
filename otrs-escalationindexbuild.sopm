@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<otrs_package version="1.0">
+    <Name>Seges-EscalationIndexBuild</Name>
+    <Version>1.0.0</Version>
+    <Framework>6.x</Framework>
+    <Vendor>Câmara dos Deputados</Vendor>
+    <URL>https://www.camara.leg.br/</URL>
+    <License>GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007</License>
+    <ChangeLog Version="1.0.0" Date="2021-04-27 10:53:00">New package.</ChangeLog>
+    <Description Lang="en">Allows a SLA based on calendar days with an offset to the next working day it the start or final dates are non working days.</Description>
+    <IntroInstall Type="post" Lang="en" Title="Thank you!">Thank you for choosing the Seges-EscalationIndexBuild.</IntroInstall>
+    <BuildDate>?</BuildDate>
+    <BuildHost>?</BuildHost>
+    <PackageRequired Version="6.0.7">Znuny4OTRS-EscalationSuspend</PackageRequired>
+    <Filelist>
+        <File Permission="644" Location="Custom/Kernel/System/Ticket/Znuny4OTRSEscalationSuspend.pm"></File>
+        <File Permission="644" Location="Kernel/Config/Files/XML/SegesEscalationIndexBuild.xml"></File>
+    </Filelist>
+    <!--
+    <DatabaseInstall>
+        <TableCreate Name="calendar_event">
+            <Column Name="id" Required="true" PrimaryKey="true" AutoIncrement="true" Type="BIGINT"/>
+            <Column Name="title" Required="true" Size="250" Type="VARCHAR"/>
+            <Column Name="content" Required="false" Size="250" Type="VARCHAR"/>
+            <Column Name="start_time" Required="true" Type="DATE"/>
+            <Column Name="end_time" Required="true" Type="DATE"/>
+            <Column Name="owner_id" Required="true" Type="INTEGER"/>
+            <Column Name="event_status" Required="true" Size="50" Type="VARCHAR"/>
+        </TableCreate>
+    </DatabaseInstall>
+    <DatabaseUninstall>
+        <TableDrop Name="calendar_event"/>
+    </DatabaseUninstall>
+    -->
+</otrs_package>
