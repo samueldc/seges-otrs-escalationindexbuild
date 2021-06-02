@@ -34,7 +34,7 @@ Vagrant.configure("2") do |config|
     znunydv.vm.network "private_network", ip: "10.0.0.11"
     znunydv.vm.network "forwarded_port", guest: 80, host: 8081
     znunydv.vm.hostname = "znuny-dv.localhost"
-    znunydv.vm.synced_folder ".", "/opt/otrs"
+    znunydv.vm.synced_folder ".", "/opt/otrs-module/"
     znunydv.vm.provision "file", source: "./playbook.znuny-dv.yml", destination: "/home/vagrant/"
     znunydv.vm.provision "shell", 
       inline: 'printf "\ndeb http://ppa.launchpad.net/ansible/ansible/ubuntu trusty main" | sudo tee /etc/apt/sources.list.d/ansible.list'
@@ -50,6 +50,13 @@ Vagrant.configure("2") do |config|
       }
       ansible.verbose = "-vvv"        
     end
+    znunydv.vm.provision "shell", run: "always", inline: <<-SHELL
+    #   cd /opt
+    #   sudo git clone https://github.com/OTRS/module-tools.git
+    #   cd /opt/module-tools
+    #   sudo git checkout rel-1_0
+      /opt/module-tools/link.pl /opt/otrs/module/ /opt/otrs/
+    SHELL
     znunydv.vm.provision "shell", inline: "sudo systemctl restart apache2", run: "always"
   end  
 

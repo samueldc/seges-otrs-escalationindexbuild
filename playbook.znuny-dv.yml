@@ -37,12 +37,17 @@
 #      - --strip-components=1
 #      creates: /opt/otobo/Kernel
 #
-#  - name: checkout git repository
-#    git:
-#      repo: https://github.com/znuny/Znuny.git
-#      force: yes
-#      dest: /opt/otrs
-#
+  - name: checkout git znuny repository
+    git:
+      repo: https://github.com/znuny/Znuny.git
+      dest: /opt/otrs
+
+  - name: checkout git otrs module-tools repository
+    git:
+      repo: https://github.com/OTRS/module-tools.git
+      dest: /opt/module-tools
+      version: rel-1_0
+
   - name: configure otrs user
     user:
       append: yes

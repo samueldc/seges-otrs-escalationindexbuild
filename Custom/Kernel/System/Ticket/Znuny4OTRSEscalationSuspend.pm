@@ -508,6 +508,11 @@ our $ObjectManagerDisabled = 1;
 #                 my $DestinationTime = $DateTimeObject->ToEpoch();
                 
                 # Samuel:
+                # Obter configurações
+                my $CalendarDaysSLAs = $Kernel::OM->Get('Kernel::Config')->Get('Core###Seges-EscalationIndexBuild###CalendarDaysSLAs'); # array
+                my $ReferenceCalendarNumber = $Kernel::OM->Get('Kernel::Config')->Get('Core###Seges-EscalationIndexBuild###ReferenceCalendarNumber');
+                my $NonWorkingDaysOfWeek = $Kernel::OM->Get('Kernel::Config')->Get('Core###Seges-EscalationIndexBuild###NonWorkingDaysOfWeek'); # array
+
                 # Verificar necessidade de deslocar a data inicial de contagem do SLA (StartTime abaixo)
                 my $MyStartDate = $Kernel::OM->Create(
                     'Kernel::System::DateTime',
