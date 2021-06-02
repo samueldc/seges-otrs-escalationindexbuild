@@ -7,7 +7,7 @@
             <Item ValueType="String" ValueRegex="">Kernel::System::Ticket::Znuny4OTRSEscalationSuspend</Item>
         </Value>
     </Setting> -->
-    <Setting Name="Core###Seges-EscalationIndexBuild###CalendarDaysSLAs" Required="0" Valid="1">
+    <Setting Name="CalendarDaysSLAs" Required="0" Valid="1">
         <Description Translatable="1">List of SLAs based on calendar days and which the system should add an offset to the next working day it the start or final dates are non working days.</Description>
         <Navigation>Core</Navigation>
         <Value>
@@ -15,20 +15,20 @@
             </Array>
         </Value>
     </Setting>
-    <Setting Name="Core###Seges-EscalationIndexBuild###ReferenceCalendarNumber" Required="1" Valid="1">
+    <!-- <Setting Name="ReferenceCalendarNumber" Required="0" Valid="1">
         <Description Translatable="1">Reference calendar number used to check start or final dates against (1, 2... 9).</Description>
         <Navigation>Core</Navigation>
         <Value>
             <Item ValueType="String" ValueRegex="">0</Item>
         </Value>
-    </Setting>
-    <Setting Name="Core###Seges-EscalationIndexBuild###NonWorkingDaysOfWeek" Required="1" Valid="1">
+    </Setting> -->
+    <Setting Name="NonWorkingDaysOfWeek" Required="0" Valid="1">
         <Description Translatable="1">List of non working days of week (1 for monday, 2 for tuesday... and 7 for sunday).</Description>
         <Navigation>Core</Navigation>
         <Value>
             <Array>
-                <Item ValueType="String" ValueRegex="">6</Item>
-                <Item ValueType="String" ValueRegex="">7</Item>
+                <Item>6</Item>
+                <Item>7</Item>
             </Array>
         </Value>
     </Setting>

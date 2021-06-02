@@ -55,7 +55,7 @@ Vagrant.configure("2") do |config|
     #   sudo git clone https://github.com/OTRS/module-tools.git
     #   cd /opt/module-tools
     #   sudo git checkout rel-1_0
-      /opt/module-tools/link.pl /opt/otrs/module/ /opt/otrs/
+      /opt/module-tools/link.pl /opt/otrs-module/ /opt/otrs/
     SHELL
     znunydv.vm.provision "shell", inline: "sudo systemctl restart apache2", run: "always"
   end  

@@ -20,6 +20,7 @@ use strict;
 use warnings;
 
 use Kernel::System::DateTime;
+use Kernel::System::VariableCheck qw(:all);
 use Data::Dumper;
 
 our $ObjectManagerDisabled = 1;
@@ -507,65 +508,86 @@ our $ObjectManagerDisabled = 1;
 
 #                 my $DestinationTime = $DateTimeObject->ToEpoch();
                 
-                # Samuel:
-                # Obter configurações
-                my $CalendarDaysSLAs = $Kernel::OM->Get('Kernel::Config')->Get('Core###Seges-EscalationIndexBuild###CalendarDaysSLAs'); # array
-                my $ReferenceCalendarNumber = $Kernel::OM->Get('Kernel::Config')->Get('Core###Seges-EscalationIndexBuild###ReferenceCalendarNumber');
-                my $NonWorkingDaysOfWeek = $Kernel::OM->Get('Kernel::Config')->Get('Core###Seges-EscalationIndexBuild###NonWorkingDaysOfWeek'); # array
-
-                # Verificar necessidade de deslocar a data inicial de contagem do SLA (StartTime abaixo)
-                my $MyStartDate = $Kernel::OM->Create(
-                    'Kernel::System::DateTime',
-                    ObjectParams => {
-                        String => $Ticket{Created},
-                        TimeZone => 'UTC',
-                    }
-                );
-                # bless $MyStartDate, 'Kernel::System::DateTime';
-                my $IsWorkingDay = 0;
-                while ( !$IsWorkingDay ) {
-                    if ( $MyStartDate->Get()->{DayOfWeek} eq 6 || $MyStartDate->Get()->{DayOfWeek} eq 7 || $MyStartDate->IsVacationDay() ) {
-                        my $Success = $MyStartDate->Add(
-                            Days => 1, 
-                            AsWorkingTime => 0,
-                        );
-                    } else {
-                        $IsWorkingDay = 1;
-                    }
+                # ---
+                # Seges-EscalationIndexBuild
+                # ---
+                my $DestinationTime = 0;
+                # Get and validate config
+                my @CalendarDaysSLAs = [];
+                if ( IsArrayRefWithData($Kernel::OM->Get('Kernel::Config')->Get('CalendarDaysSLAs')) ) {
+                    @CalendarDaysSLAs = @{$Kernel::OM->Get('Kernel::Config')->Get('CalendarDaysSLAs')};
                 }
-                
-                my $DestinationTime = $Self->TicketEscalationSuspendCalculate(
-                    TicketID     => $Ticket{TicketID},
-                    # StartTime    => $Ticket{Created},
-                    StartTime    => $MyStartDate->Format( Format => '%Y-%m-%d %H:%M:%S' ),
-                    ResponseTime => $Escalation{SolutionTime},
-                    Calendar     => $Escalation{Calendar},
-                    Suspended    => $SuspendStateActive,
-                );
+                my $MySLAID = $Ticket{SLAID};
+                # Check is the ticket SLA is a configured calendar days SLA
+                if ( grep(/$MySLAID/, @CalendarDaysSLAs) ) {
+                    # my $ReferenceCalendarNumber = 0;
+                    # if (IsStringWithData($Kernel::OM->Get('Kernel::Config')->Get('ReferenceCalendarNumber')) {
+                    #     $ReferenceCalendarNumber = $Kernel::OM->Get('Kernel::Config')->Get('ReferenceCalendarNumber');
+                    # }
+                    my @NonWorkingDaysOfWeek = ();
+                    if ( IsArrayRefWithData($Kernel::OM->Get('Kernel::Config')->Get('NonWorkingDaysOfWeek')) ) {
+                        @NonWorkingDaysOfWeek = @{$Kernel::OM->Get('Kernel::Config')->Get('NonWorkingDaysOfWeek')};
+                    }
 
-                # Samuel:
-                # Verificar necessidade de deslocar a data final de contagem do SLA (DestinationTime)
-                my $MyDestinationDate = $Kernel::OM->Create(
-                    'Kernel::System::DateTime',
-                    ObjectParams => {
-                        Epoch => $DestinationTime,
+                    # Check need to offset the start time based on ticket creation time
+                    my $MyStartDate = $Kernel::OM->Create(
+                        'Kernel::System::DateTime',
+                        ObjectParams => {
+                            String => $Ticket{Created},
+                            TimeZone => 'UTC',
+                        }
+                    );
+                    # bless $MyStartDate, 'Kernel::System::DateTime';
+                    my $IsWorkingDay = 0;
+                    while ( !$IsWorkingDay ) {
+                        my $DayOfWeek = $MyStartDate->Get()->{DayOfWeek};
+                        if ( grep(/$DayOfWeek/, @NonWorkingDaysOfWeek) || $MyStartDate->IsVacationDay() ) {
+                            my $Success = $MyStartDate->Add(
+                                Days => 1, 
+                                AsWorkingTime => 0,
+                            );
+                        } else {
+                            $IsWorkingDay = 1;
+                        }
                     }
-                );
-                # bless $MyDestinationDate, 'Kernel::System::DateTime';
-                $IsWorkingDay = 0;
-                while ( !$IsWorkingDay ) {
-                    if ( $MyDestinationDate->Get()->{DayOfWeek} eq 6 || $MyDestinationDate->Get()->{DayOfWeek} eq 7 || $MyDestinationDate->IsVacationDay() ) {
-                        $MyDestinationDate->Add(Days => 1, AsWorkingTime => 0,);
-                    } else {
-                        $IsWorkingDay = 1;
+                    
+                    $DestinationTime = $Self->TicketEscalationSuspendCalculate(
+                        TicketID     => $Ticket{TicketID},
+                        # StartTime    => $Ticket{Created},
+                        StartTime    => $MyStartDate->Format( Format => '%Y-%m-%d %H:%M:%S' ), # Seges-EscalationIndexBuild
+                        ResponseTime => $Escalation{SolutionTime},
+                        Calendar     => $Escalation{Calendar},
+                        Suspended    => $SuspendStateActive,
+                    );
+
+                    # Check need to offset the destination time based on destination time previously calculated
+                    my $MyDestinationDate = $Kernel::OM->Create(
+                        'Kernel::System::DateTime',
+                        ObjectParams => {
+                            Epoch => $DestinationTime,
+                        }
+                    );
+                    # bless $MyDestinationDate, 'Kernel::System::DateTime';
+                    $IsWorkingDay = 0;
+                    while ( !$IsWorkingDay ) {
+                        my $DayOfWeek = $MyDestinationDate->Get()->{DayOfWeek};
+                        if ( grep(/$DayOfWeek/, @NonWorkingDaysOfWeek) || $MyDestinationDate->IsVacationDay() ) {
+                            $MyDestinationDate->Add(Days => 1, AsWorkingTime => 0,);
+                        } else {
+                            $IsWorkingDay = 1;
+                        }
                     }
+                    $DestinationTime = $MyDestinationDate->ToEpoch();
+                } else { # Process the normal cases
+                    $DestinationTime = $Self->TicketEscalationSuspendCalculate(
+                        TicketID     => $Ticket{TicketID},
+                        StartTime    => $Ticket{Created},
+                        ResponseTime => $Escalation{SolutionTime},
+                        Calendar     => $Escalation{Calendar},
+                        Suspended    => $SuspendStateActive,
+                    );
                 }
-                $DestinationTime = $MyDestinationDate->ToEpoch();
-
-                $Kernel::OM->Get('Kernel::System::Log')->Log(
-                    Priority => 'error',
-                    Message  => "Samuel => Cheguei aqui!!!",
-                );
+                # --- End of Seges-EscalationIndexBuild
 
                 # update solution time to $DestinationTime
 #                $DBObject->Do(
