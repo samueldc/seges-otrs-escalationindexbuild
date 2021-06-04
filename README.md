@@ -12,12 +12,12 @@ Allows a SLA based on calendar days with an offset to the next working day if th
 * Download the package in the release section.
 * Install the package into OTRS.
 
-# Use
+## Use
 
 * Set up the calendar days SLAs ids using the setting ```Core::CalendarDaysSLAs```.
 * Set up the non working days of week using the setting ```Core::NonWorkingDaysOfWeek```.
 * Set up the global vacation days.
 
-# Roadmap
+## Roadmap
 
-* Allows to set up a reference calendar, instead of use the global vacation days.
+* Allow to set up a reference calendar, instead of use the global vacation days.
